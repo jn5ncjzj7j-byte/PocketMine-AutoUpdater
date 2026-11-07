@@ -32,6 +32,97 @@ python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 
 The script updates the PocketMine-MP PHAR only. It does **not** install or update PHP. PocketMine-MP requires a compatible PHP build and extensions. Keeping the official `start.sh` and bundled `bin/` runtime is recommended.
 
+## Download and install
+
+### Option 1: Clone with Git (recommended)
+
+Install Git and Python 3 first, then download the project:
+
+```bash
+git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
+cd PocketMine-AutoUpdater
+```
+
+Keep the updater in this folder, or copy `pmmp_updater.py` into your PocketMine server folder.
+
+### Option 2: Download only the Python script
+
+If you do not want to clone the repository:
+
+```bash
+mkdir -p PocketMine-AutoUpdater
+cd PocketMine-AutoUpdater
+curl -L -o pmmp_updater.py https://raw.githubusercontent.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater/main/pmmp_updater.py
+```
+
+You can also open the [latest source file](https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater/blob/main/pmmp_updater.py) and use GitHub's **Raw** button.
+
+### Linux (Ubuntu / Debian)
+
+Install the required download tools:
+
+```bash
+sudo apt update
+sudo apt install -y python3 git curl
+```
+
+Then clone and enter the project:
+
+```bash
+git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
+cd PocketMine-AutoUpdater
+```
+
+Run it against a server in the current directory:
+
+```bash
+python3 pmmp_updater.py
+```
+
+Or point it at your server directory:
+
+```bash
+python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
+```
+
+### Termux (Android)
+
+Install the tools in Termux:
+
+```bash
+pkg update
+pkg install -y python git
+```
+
+Download the project:
+
+```bash
+git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
+cd PocketMine-AutoUpdater
+```
+
+Run the updater with the path to your PocketMine server:
+
+```bash
+python pmmp_updater.py --dir /path/to/pocketmine
+```
+
+**Termux note:** This installs the Python updater in Termux, but it does not make PocketMine's PHP runtime compatible with native Android/Termux. If your PocketMine server runs inside Ubuntu using `proot-distro`, install Git and Python inside that Ubuntu environment and clone the project there. Run the updater from the same environment as the server, using the Ubuntu server directory path.
+
+Example inside Ubuntu:
+
+```bash
+apt update
+apt install -y python3 git curl
+git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
+cd PocketMine-AutoUpdater
+python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
+```
+
+### Other Linux distributions
+
+Install Python 3, Git, and curl using your distribution's package manager, then use the Git clone commands above. The updater itself uses only Python's standard library; Git and curl are needed only for downloading the project with these examples.
+
 ## Installation
 
 1. Put `pmmp_updater.py` in your server directory, or keep it elsewhere and use `--dir`.
