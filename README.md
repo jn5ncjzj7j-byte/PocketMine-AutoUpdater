@@ -113,7 +113,7 @@ py pmmp_updater.py
 Or specify the server folder:
 
 ```powershell
-py pmmp_updater.py --dir "C:\\PocketMine"
+py pmmp_updater.py --dir "C:\PocketMine"
 ```
 
 **Windows notes:**
