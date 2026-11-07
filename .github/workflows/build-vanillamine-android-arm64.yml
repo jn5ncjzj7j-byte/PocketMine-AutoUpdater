@@ -1,0 +1,65 @@
+name: Build VanillaMine PHP for Android ARM64
+
+on:
+  workflow_dispatch:
+    inputs:
+      php_version:
+        description: PHP version
+        required: true
+        type: choice
+        options:
+          - "8.4"
+        default: "8.4"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vanillamine-android-arm64-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 240
+    steps:
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential make autoconf automake libtool-bin m4 wget gzip bzip2 bison g++ git cmake pkg-config re2c ca-certificates file binutils
+
+      - name: Build Android ARM64 musl toolchain
+        run: |
+          git clone --depth 1 --branch android-aarch64-php-patches https://github.com/pmmp/musl-cross-make.git
+          cd musl-cross-make
+          printf '%s\n' 'TARGET = aarch64-linux-musl' 'OUTPUT = /opt/cross' 'COMMON_CONFIG += CFLAGS="-g0 -Os" CXXFLAGS="-g0 -Os" LDFLAGS="-s"' > config.mak
+          make -j2
+          sudo make install
+          test -x /opt/cross/bin/aarch64-linux-musl-gcc
+          echo /opt/cross/bin >> "$GITHUB_PATH"
+
+      - name: Build VanillaMine PHP runtime
+        env:
+          PHP_VERSION: ${{ inputs.php_version }}
+        run: |
+          git clone --depth 1 https://gitlab.com/VanillaPocketMine/PHP-Binaries.git php-binaries
+          cd php-binaries
+          chmod +x compile.sh
+          ./compile.sh -t android-aarch64 -x -j2 -P5 -z"$PHP_VERSION"
+          test -x bin/php7/bin/php
+          file bin/php7/bin/php
+          readelf -h bin/php7/bin/php | grep -E 'Machine:.*AArch64'
+          mkdir -p package/bin
+          cp -a bin/php7 package/bin/
+          tar -czf "$GITHUB_WORKSPACE/PHP-8.4-Android-arm64-PM5.tar.gz" -C package bin
+          cd "$GITHUB_WORKSPACE"
+          test -s PHP-8.4-Android-arm64-PM5.tar.gz
+          sha256sum PHP-8.4-Android-arm64-PM5.tar.gz
+
+      - name: Upload ARM64 PHP runtime
+        uses: actions/upload-artifact@v4
+        with:
+          name: vanillamine-php-8.4-android-aarch64
+          path: PHP-8.4-Android-arm64-PM5.tar.gz
+          if-no-files-found: error
+          retention-days: 30
