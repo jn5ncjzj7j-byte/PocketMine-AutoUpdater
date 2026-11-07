@@ -30,7 +30,17 @@ python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 - A PHP runtime compatible with the PocketMine-MP build.
 - An existing server directory, or an empty directory for the first PHAR download.
 
-The script updates the PocketMine-MP PHAR only. It does **not** install or update PHP. PocketMine-MP requires a compatible PHP build and extensions. Keeping the official `start.sh` and bundled `bin/` runtime is recommended.
+### PHP version and runtime requirements
+
+The current Axolotl-PM 5.x release line requires **PHP 8.1 or newer**. The recommended PHP build for PocketMine-MP 5.x is currently **PHP 8.4**. Use the PocketMine-specific PHP binary, which includes the extensions PocketMine needs; a generic PHP installation may be missing required extensions.
+
+**This updater does not install or update PHP.** It only replaces `PocketMine-MP.phar`. Updating the PHAR does not automatically update your PHP runtime.
+
+- If your server has the official `start.sh` and bundled `bin/` folder, keep them together and let `start.sh` launch the server.
+- If the updater has to launch the PHAR directly, the `php` command in your PATH must point to a compatible PocketMine PHP runtime.
+- Before updating an existing server, check that its PHP runtime supports the release you are installing. If it is too old or lacks required extensions, update the PHP runtime separately before starting the new PHAR.
+
+See the [Axolotl-PM PHP requirements](https://axolotl-pm.org/docs/migrating-from-pocketmine-mp#php), [recommended PHP binaries](https://github.com/axolotl-pm/PHP-Binaries/releases), and [manual installation guide](https://axolotl-pm.org/docs/installation/installing-manually).
 
 ## Download and install
 
@@ -117,7 +127,7 @@ py pmmp_updater.py --dir "C:\PocketMine"
 ```
 
 **Windows notes:**
-- Make sure a Windows-compatible PHP runtime that meets PocketMine-MP's requirements is available in your PATH. The updater does not install PHP.
+- Use a PocketMine-compatible Windows PHP runtime. Axolotl-PM 5.x requires PHP 8.1 or newer; PHP 8.4 is currently the recommended PM5 build. Download the PocketMine-specific Windows binary, not a generic PHP package. The updater does not install or update PHP.
 - If your server folder has a Unix `start.sh`, it cannot be launched natively by Windows. The fallback is to run `PocketMine-MP.phar` with `php`.
 - Stop the PocketMine server yourself before running the updater. Automatic running-process detection currently works through Linux `/proc`, not Windows.
 - If you use the official Windows PocketMine package or a bundled PHP runtime, check that its startup method and PHP executable are available to this script; otherwise run the updater in the same environment that provides the server's PHP runtime.
@@ -144,7 +154,7 @@ Run the updater with the path to your PocketMine server:
 python pmmp_updater.py --dir /path/to/pocketmine
 ```
 
-**Termux note:** This installs the Python updater in Termux, but it does not make PocketMine's PHP runtime compatible with native Android/Termux. If your PocketMine server runs inside Ubuntu using `proot-distro`, install Git and Python inside that Ubuntu environment and clone the project there. Run the updater from the same environment as the server, using the Ubuntu server directory path.
+**Termux note:** Installing the Python updater in Termux does not install PocketMine's PHP runtime. Axolotl-PM 5.x requires PHP 8.1 or newer and PocketMine-specific extensions; PHP 8.4 is currently the recommended PM5 build. Use a compatible PocketMine PHP binary for your environment. If your server runs inside Ubuntu using `proot-distro`, install Git and Python inside that Ubuntu environment and clone the project there. Run the updater from the same environment as the server, using the Ubuntu server directory path.
 
 Example inside Ubuntu:
 
@@ -208,7 +218,7 @@ Your worlds and plugins are not intentionally changed. Keep separate regular bac
 ## Important notes
 
 - Stop the server before running the updater. On Linux, it checks `/proc` for a process using this server's PHAR and refuses to update if detected.
-- The updater does not manage PHP versions or extensions.
+- The updater does not manage PHP versions or extensions. Axolotl-PM 5.x requires PHP 8.1 or newer; PHP 8.4 is currently the recommended PM5 build.
 - If `start.sh` exists, it is used to start the server. Otherwise, the script looks for `php` on your PATH and then checks common bundled PHP paths.
 - The updater currently follows the Axolotl-PM community-maintained PocketMine-MP fork: `https://github.com/axolotl-pm/PocketMine-MP`.
 - This is a community fork, not the original PocketMine-MP maintainers' release channel. Check the fork's compatibility notes before updating an existing production server.
@@ -217,7 +227,7 @@ Your worlds and plugins are not intentionally changed. Keep separate regular bac
 
 **“PHP was not found”**
 
-Install a PHP runtime compatible with your PocketMine-MP build, or restore the official server `start.sh` and its bundled `bin/` runtime.
+Install a PocketMine-compatible PHP runtime (PHP 8.1 or newer for Axolotl-PM 5.x; PHP 8.4 is currently recommended), including the required PocketMine extensions, or restore the server's `start.sh` and bundled `bin/` runtime.
 
 **The server exits immediately**
 
