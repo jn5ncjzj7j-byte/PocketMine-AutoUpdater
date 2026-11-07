@@ -13,11 +13,11 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-API_URL = "https://update.pmmp.io/api?version=5"
+API_URL = "https://api.github.com/repos/axolotl-pm/PocketMine-MP/releases/latest"
 PHAR_NAME = "PocketMine-MP.phar"
 STATE_NAME = ".pmmp_updater.json"
 BACKUP_DIR = "backups"
-USER_AGENT = "PocketMine-AutoUpdater/1.0"
+USER_AGENT = "PocketMine-AutoUpdater/1.1"
 
 
 class UpdaterError(Exception):
@@ -25,38 +25,54 @@ class UpdaterError(Exception):
 
 
 def request_json(url):
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    )
     with urllib.request.urlopen(request, timeout=30) as response:
         payload = response.read()
     try:
         data = json.loads(payload.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise UpdaterError("The PocketMine update API returned invalid JSON.") from exc
+        raise UpdaterError("The GitHub release API returned invalid JSON.") from exc
     if not isinstance(data, dict):
-        raise UpdaterError("The PocketMine update API returned an unexpected response.")
+        raise UpdaterError("The GitHub release API returned an unexpected response.")
     return data
 
 
 def get_latest_build():
     data = request_json(API_URL)
-    required = ("build", "download_url")
-    missing = [key for key in required if key not in data]
-    if missing:
-        raise UpdaterError("The update API response is missing: " + ", ".join(missing))
-    try:
-        build = int(data["build"])
-    except (TypeError, ValueError) as exc:
-        raise UpdaterError("The update API returned an invalid build number.") from exc
-    download_url = data["download_url"]
-    parsed = urllib.parse.urlparse(download_url)
-    if parsed.scheme != "https" or not parsed.hostname:
-        raise UpdaterError("The update API returned an unsafe download URL.")
+    if data.get("draft") or data.get("prerelease"):
+        raise UpdaterError("GitHub returned a draft or prerelease instead of a stable release.")
+
+    version = str(data.get("tag_name") or "").strip()
+    if not version:
+        raise UpdaterError("The GitHub release did not include a version tag.")
+
+    assets = data.get("assets")
+    if not isinstance(assets, list):
+        raise UpdaterError("The GitHub release did not include a valid assets list.")
+
+    download_url = None
+    for asset in assets:
+        if isinstance(asset, dict) and asset.get("name") == PHAR_NAME:
+            download_url = asset.get("browser_download_url")
+            break
+
+    parsed = urllib.parse.urlparse(download_url or "")
+    if parsed.scheme != "https" or parsed.hostname != "github.com":
+        raise UpdaterError(f"The release {version} does not contain a valid {PHAR_NAME} download.")
+
     return {
-        "build": build,
-        "version": str(data.get("base_version", "unknown")),
-        "channel": str(data.get("channel", "unknown")),
-        "php_version": str(data.get("php_version", "unknown")),
+        "build": version,
+        "version": version,
+        "channel": "stable",
         "download_url": download_url,
+        "published_at": str(data.get("published_at", "unknown")),
     }
 
 
@@ -95,7 +111,7 @@ def is_server_running(server_dir):
 
 def download_phar(url, destination):
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(request, timeout=120) as response:
+    with urllib.request.urlopen(request, timeout=180) as response:
         final_url = urllib.parse.urlparse(response.geturl())
         if final_url.scheme != "https":
             raise UpdaterError("The download redirected to a non-HTTPS URL.")
@@ -117,13 +133,13 @@ def update_server(server_dir, latest):
     state = read_state(state_path)
     current_build = state.get("build")
     if phar.exists() and str(current_build) == str(latest["build"]):
-        print(f"PocketMine-MP {latest['version']} (build {latest['build']}) is already up to date.")
+        print(f"PocketMine-MP {latest['version']} is already up to date.")
         return
 
     if is_server_running(server_dir):
         raise UpdaterError("PocketMine-MP appears to be running. Stop the server before updating.")
 
-    print(f"Latest available: PocketMine-MP {latest['version']} (build {latest['build']})")
+    print(f"Latest available: PocketMine-MP {latest['version']}")
     if phar.exists():
         backup_dir = server_dir / BACKUP_DIR
         backup_dir.mkdir(parents=True, exist_ok=True)
@@ -146,6 +162,7 @@ def update_server(server_dir, latest):
         "build": latest["build"],
         "version": latest["version"],
         "channel": latest["channel"],
+        "published_at": latest["published_at"],
         "sha256": sha256_file(phar),
         "updated_at": datetime.now(timezone.utc).isoformat(),
     }
@@ -182,11 +199,11 @@ def start_server(server_dir):
         raise UpdaterError(f"Could not start the server: {exc}") from exc
     if result.returncode != 0:
         raise UpdaterError(f"PocketMine-MP exited with status {result.returncode}.")
-    
+
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Check for PocketMine-MP updates, install them, and start the server."
+        description="Check for PocketMine-MP updates, install them, and start your server."
     )
     parser.add_argument(
         "--dir",
