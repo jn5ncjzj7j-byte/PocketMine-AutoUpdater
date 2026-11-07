@@ -14,6 +14,9 @@ It uses the current directory by default. You can point it at another server fol
 python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 ```
 
+<details>
+<summary>Features</summary>
+
 ## Features
 
 - Checks the latest stable Axolotl-PM release through the GitHub Releases API on every launch.
@@ -22,6 +25,11 @@ python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 - Leaves worlds, plugins, configuration, and other server files untouched.
 - Starts the server after the update check, even when no update is needed.
 - Uses your existing `start.sh` when present; otherwise it runs the PHAR with PHP.
+
+</details>
+
+<details>
+<summary>Requirements and PHP setup</summary>
 
 ## Requirements
 
@@ -42,7 +50,12 @@ The current Axolotl-PM 5.x release line requires **PHP 8.1 or newer**. The recom
 
 See the [Axolotl-PM PHP requirements](https://axolotl-pm.org/docs/migrating-from-pocketmine-mp#php), [recommended PHP binaries](https://github.com/axolotl-pm/PHP-Binaries/releases), and [manual installation guide](https://axolotl-pm.org/docs/installation/installing-manually).
 
+</details>
+
 ## Download and install
+
+<details>
+<summary>Download and install by platform</summary>
 
 ### Option 1: Clone with Git (recommended)
 
@@ -170,6 +183,11 @@ python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 
 Install Python 3, Git, and curl using your distribution's package manager, then use the Git clone commands above. The updater itself uses only Python's standard library; Git and curl are needed only for downloading the project with these examples.
 
+</details>
+
+<details>
+<summary>Installation</summary>
+
 ## Installation
 
 1. Put `pmmp_updater.py` in your server directory, or keep it elsewhere and use `--dir`.
@@ -186,6 +204,11 @@ Optional executable mode:
 chmod +x pmmp_updater.py
 ./pmmp_updater.py
 ```
+
+</details>
+
+<details>
+<summary>Usage examples</summary>
 
 ## Examples
 
@@ -207,6 +230,11 @@ Run it from any directory using an absolute script path:
 python3 /path/to/pmmp_updater.py --dir /home/ubuntu/pocketmine
 ```
 
+</details>
+
+<details>
+<summary>Backups and update state</summary>
+
 ## Backups and update state
 
 Before replacing an existing `PocketMine-MP.phar`, the script copies it into `backups/`.
@@ -215,6 +243,11 @@ The file `.pmmp_updater.json` stores the last installed release tag. If this fil
 
 Your worlds and plugins are not intentionally changed. Keep separate regular backups of important server data.
 
+</details>
+
+<details>
+<summary>Important notes</summary>
+
 ## Important notes
 
 - Stop the server before running the updater. On Linux, it checks `/proc` for a process using this server's PHAR and refuses to update if detected.
@@ -222,6 +255,11 @@ Your worlds and plugins are not intentionally changed. Keep separate regular bac
 - If `start.sh` exists, it is used to start the server. Otherwise, the script looks for `php` on your PATH and then checks common bundled PHP paths.
 - The updater currently follows the Axolotl-PM community-maintained PocketMine-MP fork: `https://github.com/axolotl-pm/PocketMine-MP`.
 - This is a community fork, not the original PocketMine-MP maintainers' release channel. Check the fork's compatibility notes before updating an existing production server.
+
+</details>
+
+<details>
+<summary>Troubleshooting</summary>
 
 ## Troubleshooting
 
@@ -241,9 +279,17 @@ Stop the PocketMine-MP process first, then run the updater again.
 
 Check your internet connection and try again later. The updater needs access to `api.github.com` and GitHub's release download host. If GitHub returns an API rate-limit or network error, wait and retry.
 
+</details>
+
+<details>
+<summary>Useful links</summary>
+
 ## Links
 
 - [Axolotl-PM PocketMine-MP releases](https://github.com/axolotl-pm/PocketMine-MP/releases)
 - [Latest release API](https://api.github.com/repos/axolotl-pm/PocketMine-MP/releases/latest)
 - [Original PocketMine-MP repository](https://github.com/pmmp/PocketMine-MP)
 - [Manual installation documentation](https://doc.pmmp.io/en/rtfd/installation/installing-manually.html)
+
+</details>
+
