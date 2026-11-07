@@ -35,18 +35,22 @@ python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 
 - Linux, Windows, macOS, or another environment with Python 3.
 - Internet access for the update check and download.
-- A PHP runtime compatible with the PocketMine-MP build.
+- A PocketMine-compatible PHP runtime for the target operating system and architecture.
 - An existing server directory, or an empty directory for the first PHAR download.
 
 ### PHP version and runtime requirements
 
-The current Axolotl-PM 5.x release line requires **PHP 8.1 or newer**. The recommended PHP build for PocketMine-MP 5.x is currently **PHP 8.4**. Use the PocketMine-specific PHP binary, which includes the extensions PocketMine needs; a generic PHP installation may be missing required extensions.
+The current Axolotl-PM 5.x release line requires **PHP 8.1 or newer**. **PHP 8.4** is the recommended PM5 runtime. Use a PocketMine-specific PHP build with the required extensions; a generic PHP package from `apt` or another package manager may not include them.
 
-**This updater does not install or update PHP.** It only replaces `PocketMine-MP.phar`. Updating the PHAR does not automatically update your PHP runtime.
+**This updater does not install or update PHP.** It only replaces `PocketMine-MP.phar`.
 
-- If your server has the official `start.sh` and bundled `bin/` folder, keep them together and let `start.sh` launch the server.
-- If the updater has to launch the PHAR directly, the `php` command in your PATH must point to a compatible PocketMine PHP runtime.
-- Before updating an existing server, check that its PHP runtime supports the release you are installing. If it is too old or lacks required extensions, update the PHP runtime separately before starting the new PHAR.
+When starting the PHAR directly, the updater checks these bundled PHP paths first:
+
+1. `<server directory>/bin/php7/bin/php`
+2. `<server directory>/bin/php/bin/php`
+3. `php` available in your PATH
+
+Put the PocketMine PHP build's `bin/` directory inside the server directory. This lets the updater use the bundled runtime instead of accidentally selecting an incompatible system PHP. If you have a working `start.sh`, the updater uses that script instead.
 
 See the [Axolotl-PM PHP requirements](https://axolotl-pm.org/docs/migrating-from-pocketmine-mp#php), [recommended PHP binaries](https://github.com/axolotl-pm/PHP-Binaries/releases), and [manual installation guide](https://axolotl-pm.org/docs/installation/installing-manually).
 
@@ -190,17 +194,48 @@ Run the updater with your PocketMine server path:
 python pmmp_updater.py --dir /path/to/pocketmine
 ```
 
-**Important:** Installing the Python updater in Termux does not install PocketMine's PHP runtime. Axolotl-PM 5.x requires PHP 8.1 or newer and PocketMine-specific extensions; PHP 8.4 is currently the recommended PM5 build. Use a compatible PocketMine PHP binary for your environment.
+**Important:** Installing the Python updater in Termux does not install PocketMine's PHP runtime. Axolotl-PM 5.x requires PHP 8.1 or newer; PHP 8.4 is the recommended PM5 runtime. Use the PocketMine-specific PHP build for your Android architecture, not the generic PHP package installed by `apt` or `pkg`.
 
-If your server runs inside Ubuntu with `proot-distro`, install the updater inside that Ubuntu environment and run it there:
+#### Ubuntu PRoot on Android ARM64 (aarch64)
+
+The following example installs the Android ARM64 PHP 8.4 build tested with Ubuntu PRoot. Run these commands inside the Ubuntu PRoot shell:
+
+```bash
+mkdir -p /tmp/pmmp-php
+cd /tmp/pmmp-php
+
+curl -fL "https://github.com/axolotl-pm/PHP-Binaries/releases/download/pm5-php-8.4-latest/PHP-8.4-Android-arm64-PM5.tar.gz" -o php.tar.gz
+tar -xzf php.tar.gz
+```
+
+Copy the bundled `bin/` directory into the PocketMine server directory. For a server in `/root`:
+
+```bash
+cp -a /tmp/pmmp-php/bin /root/
+```
+
+For a server in another directory, replace `/root` with that server directory. Confirm the PHP binary works and includes PocketMine extensions:
+
+```bash
+/root/bin/php7/bin/php -v
+/root/bin/php7/bin/php -m
+```
+
+You should see PHP 8.4.x and extensions including `chunkutils2`, `curl`, `crypto`, `encoding`, `gmp`, `igbinary`, `leveldb`, `mbstring`, `morton`, `pmmpthread`, `yaml`, and `zip`.
+
+The updater checks the server's bundled `bin/php7/bin/php` before the system PHP in PATH, so it will use this runtime when launching the PHAR directly. Keep the `bin/` directory inside the server folder.
+
+If your server runs inside Ubuntu with `proot-distro`, install and run the updater inside that same Ubuntu environment:
 
 ```bash
 apt update
 apt install -y python3 git curl
 git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
 cd PocketMine-AutoUpdater
-python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
+python3 pmmp_updater.py --dir /root
 ```
+
+Use a PHP archive that matches your actual Android architecture. The URL above is specifically for Android ARM64; do not use it on x86_64 or other architectures.
 
 </details>
 
@@ -299,7 +334,7 @@ Your worlds and plugins are not intentionally changed. Keep separate regular bac
 
 - Stop the server before running the updater. On Linux, it checks `/proc` for a process using this server's PHAR and refuses to update if detected.
 - The updater does not manage PHP versions or extensions. Axolotl-PM 5.x requires PHP 8.1 or newer; PHP 8.4 is currently the recommended PM5 build.
-- If `start.sh` exists, it is used to start the server. Otherwise, the script looks for `php` on your PATH and then checks common bundled PHP paths.
+- If `start.sh` exists, it is used to start the server. Otherwise, the script checks `bin/php7/bin/php` and `bin/php/bin/php` inside the server directory first, then looks for `php` on PATH.
 - The updater currently follows the Axolotl-PM community-maintained PocketMine-MP fork: `https://github.com/axolotl-pm/PocketMine-MP`.
 - This is a community fork, not the original PocketMine-MP maintainers' release channel. Check the fork's compatibility notes before updating an existing production server.
 
@@ -312,7 +347,7 @@ Your worlds and plugins are not intentionally changed. Keep separate regular bac
 
 **“PHP was not found”**
 
-Install a PocketMine-compatible PHP runtime (PHP 8.1 or newer for Axolotl-PM 5.x; PHP 8.4 is currently recommended), including the required PocketMine extensions, or restore the server's `start.sh` and bundled `bin/` runtime.
+Install a PocketMine-compatible PHP runtime (PHP 8.1 or newer for Axolotl-PM 5.x; PHP 8.4 is recommended), including the required PocketMine extensions. Put its `bin/` folder inside the server directory, or restore the server's working `start.sh` and bundled runtime.
 
 **The server exits immediately**
 
