@@ -25,7 +25,7 @@ python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 
 ## Requirements
 
-- Linux or another Unix-like environment with Python 3.
+- Linux, Windows, macOS, or another environment with Python 3.
 - Internet access for the update check and download.
 - A PHP runtime compatible with the PocketMine-MP build.
 - An existing server directory, or an empty directory for the first PHAR download.
@@ -84,6 +84,43 @@ Or point it at your server directory:
 ```bash
 python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 ```
+
+### Windows (PowerShell)
+
+1. Install **Python 3** from [python.org](https://www.python.org/downloads/windows/). During setup, enable **Add Python to PATH**.
+2. Install Git from [git-scm.com](https://git-scm.com/download/win) if you want to clone the repository.
+3. Open PowerShell and download the project:
+
+```powershell
+git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
+cd PocketMine-AutoUpdater
+```
+
+If you do not want to install Git, download just the updater:
+
+```powershell
+New-Item -ItemType Directory -Force PocketMine-AutoUpdater
+Set-Location PocketMine-AutoUpdater
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater/main/pmmp_updater.py" -OutFile "pmmp_updater.py"
+```
+
+Run it for a server in the current directory:
+
+```powershell
+py pmmp_updater.py
+```
+
+Or specify the server folder:
+
+```powershell
+py pmmp_updater.py --dir "C:\\PocketMine"
+```
+
+**Windows notes:**
+- Make sure a Windows-compatible PHP runtime that meets PocketMine-MP's requirements is available in your PATH. The updater does not install PHP.
+- If your server folder has a Unix `start.sh`, it cannot be launched natively by Windows. The fallback is to run `PocketMine-MP.phar` with `php`.
+- Stop the PocketMine server yourself before running the updater. Automatic running-process detection currently works through Linux `/proc`, not Windows.
+- If you use the official Windows PocketMine package or a bundled PHP runtime, check that its startup method and PHP executable are available to this script; otherwise run the updater in the same environment that provides the server's PHP runtime.
 
 ### Termux (Android)
 
