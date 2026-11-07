@@ -1,6 +1,6 @@
 # PocketMine AutoUpdater
 
-A small Python launcher that checks the official PocketMine-MP update API, installs the latest available PocketMine-MP 5 build when needed, and then starts your server.
+A small Python launcher that checks the latest stable release from the Axolotl-PM PocketMine-MP GitHub repository, installs its PHAR when needed, and then starts your server.
 
 Run one command:
 
@@ -16,7 +16,7 @@ python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 
 ## Features
 
-- Checks the official PocketMine-MP 5 update API on every launch.
+- Checks the latest stable Axolotl-PM release through the GitHub Releases API on every launch.
 - Downloads and installs a newer build when needed.
 - Creates a timestamped PHAR backup before replacing an existing server PHAR.
 - Leaves worlds, plugins, configuration, and other server files untouched.
@@ -201,7 +201,7 @@ python3 /path/to/pmmp_updater.py --dir /home/ubuntu/pocketmine
 
 Before replacing an existing `PocketMine-MP.phar`, the script copies it into `backups/`.
 
-The file `.pmmp_updater.json` stores the last installed build number. If this file is missing, the updater downloads the currently advertised build on the next run.
+The file `.pmmp_updater.json` stores the last installed release tag. If this file is missing, the updater downloads the latest stable release on the next run.
 
 Your worlds and plugins are not intentionally changed. Keep separate regular backups of important server data.
 
@@ -210,8 +210,8 @@ Your worlds and plugins are not intentionally changed. Keep separate regular bac
 - Stop the server before running the updater. On Linux, it checks `/proc` for a process using this server's PHAR and refuses to update if detected.
 - The updater does not manage PHP versions or extensions.
 - If `start.sh` exists, it is used to start the server. Otherwise, the script looks for `php` on your PATH and then checks common bundled PHP paths.
-- The updater targets PocketMine-MP 5 using `https://update.pmmp.io/api?version=5`.
-- PocketMine-MP's maintainers announced that the project would no longer receive new Minecraft-version updates. This tool can install only builds still made available by the configured update API; it cannot create new upstream releases.
+- The updater currently follows the Axolotl-PM community-maintained PocketMine-MP fork: `https://github.com/axolotl-pm/PocketMine-MP`.
+- This is a community fork, not the original PocketMine-MP maintainers' release channel. Check the fork's compatibility notes before updating an existing production server.
 
 ## Troubleshooting
 
@@ -229,10 +229,11 @@ Stop the PocketMine-MP process first, then run the updater again.
 
 **The API or download request fails**
 
-Check your internet connection and try again later. The updater needs access to `update.pmmp.io` and the HTTPS download host returned by its API.
+Check your internet connection and try again later. The updater needs access to `api.github.com` and GitHub's release download host. If GitHub returns an API rate-limit or network error, wait and retry.
 
 ## Links
 
-- [PocketMine-MP](https://github.com/pmmp/PocketMine-MP)
-- [Official update API](https://update.pmmp.io/api?version=5)
+- [Axolotl-PM PocketMine-MP releases](https://github.com/axolotl-pm/PocketMine-MP/releases)
+- [Latest release API](https://api.github.com/repos/axolotl-pm/PocketMine-MP/releases/latest)
+- [Original PocketMine-MP repository](https://github.com/pmmp/PocketMine-MP)
 - [Manual installation documentation](https://doc.pmmp.io/en/rtfd/installation/installing-manually.html)
