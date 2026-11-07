@@ -182,12 +182,13 @@ def start_server(server_dir):
         phar = server_dir / PHAR_NAME
         if not phar.is_file():
             raise UpdaterError(f"{PHAR_NAME} was not found after the update.")
-        php = shutil.which("php")
+        php = None
+        for candidate in (server_dir / "bin" / "php7" / "bin" / "php", server_dir / "bin" / "php" / "bin" / "php"):
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                php = str(candidate)
+                break
         if not php:
-            for candidate in (server_dir / "bin" / "php7" / "bin" / "php", server_dir / "bin" / "php" / "bin" / "php"):
-                if candidate.is_file() and os.access(candidate, os.X_OK):
-                    php = str(candidate)
-                    break
+            php = shutil.which("php")
         if not php:
             raise UpdaterError("PHP was not found. Install a compatible PHP runtime or provide start.sh.")
         command = [php, str(phar)]
