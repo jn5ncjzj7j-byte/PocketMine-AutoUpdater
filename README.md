@@ -55,11 +55,16 @@ See the [Axolotl-PM PHP requirements](https://axolotl-pm.org/docs/migrating-from
 ## Download and install
 
 <details>
-<summary>Download and install by platform</summary>
+<summary>Download and install</summary>
 
-### Option 1: Clone with Git (recommended)
+Choose your operating system below to see the instructions.
 
-Install Git and Python 3 first, then download the project:
+<details>
+<summary>Download the updater (any OS)</summary>
+
+**Option 1: Clone with Git (recommended)**
+
+Install Git and Python 3 first, then run:
 
 ```bash
 git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
@@ -68,9 +73,9 @@ cd PocketMine-AutoUpdater
 
 Keep the updater in this folder, or copy `pmmp_updater.py` into your PocketMine server folder.
 
-### Option 2: Download only the Python script
+**Option 2: Download only the Python script**
 
-If you do not want to clone the repository:
+On Linux, macOS, or Termux:
 
 ```bash
 mkdir -p PocketMine-AutoUpdater
@@ -78,48 +83,7 @@ cd PocketMine-AutoUpdater
 curl -L -o pmmp_updater.py https://raw.githubusercontent.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater/main/pmmp_updater.py
 ```
 
-You can also open the [latest source file](https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater/blob/main/pmmp_updater.py) and use GitHub's **Raw** button.
-
-### Linux (Ubuntu / Debian)
-
-Install the required download tools:
-
-```bash
-sudo apt update
-sudo apt install -y python3 git curl
-```
-
-Then clone and enter the project:
-
-```bash
-git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
-cd PocketMine-AutoUpdater
-```
-
-Run it against a server in the current directory:
-
-```bash
-python3 pmmp_updater.py
-```
-
-Or point it at your server directory:
-
-```bash
-python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
-```
-
-### Windows (PowerShell)
-
-1. Install **Python 3** from [python.org](https://www.python.org/downloads/windows/). During setup, enable **Add Python to PATH**.
-2. Install Git from [git-scm.com](https://git-scm.com/download/win) if you want to clone the repository.
-3. Open PowerShell and download the project:
-
-```powershell
-git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
-cd PocketMine-AutoUpdater
-```
-
-If you do not want to install Git, download just the updater:
+On Windows PowerShell:
 
 ```powershell
 New-Item -ItemType Directory -Force PocketMine-AutoUpdater
@@ -127,13 +91,69 @@ Set-Location PocketMine-AutoUpdater
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater/main/pmmp_updater.py" -OutFile "pmmp_updater.py"
 ```
 
+You can also open the [latest source file](https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater/blob/main/pmmp_updater.py) and use GitHub's **Raw** button.
+
+</details>
+
+<details>
+<summary>Linux (Ubuntu / Debian)</summary>
+
+Install the required tools:
+
+```bash
+sudo apt update
+sudo apt install -y python3 git curl
+```
+
+Download the project:
+
+```bash
+git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
+cd PocketMine-AutoUpdater
+```
+
 Run it for a server in the current directory:
+
+```bash
+python3 pmmp_updater.py
+```
+
+Or specify your server directory:
+
+```bash
+python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
+```
+
+</details>
+
+<details>
+<summary>Windows (PowerShell)</summary>
+
+1. Install [Python 3](https://www.python.org/downloads/windows/). During setup, enable **Add Python to PATH**.
+2. Install [Git](https://git-scm.com/download/win) if you want to clone the repository.
+
+Open PowerShell and run:
+
+```powershell
+git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
+cd PocketMine-AutoUpdater
+```
+
+Or download only the script:
+
+```powershell
+New-Item -ItemType Directory -Force PocketMine-AutoUpdater
+Set-Location PocketMine-AutoUpdater
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater/main/pmmp_updater.py" -OutFile "pmmp_updater.py"
+```
+
+Run it:
 
 ```powershell
 py pmmp_updater.py
 ```
 
-Or specify the server folder:
+Or specify your server directory:
 
 ```powershell
 py pmmp_updater.py --dir "C:\PocketMine"
@@ -141,13 +161,16 @@ py pmmp_updater.py --dir "C:\PocketMine"
 
 **Windows notes:**
 - Use a PocketMine-compatible Windows PHP runtime. Axolotl-PM 5.x requires PHP 8.1 or newer; PHP 8.4 is currently the recommended PM5 build. Download the PocketMine-specific Windows binary, not a generic PHP package. The updater does not install or update PHP.
-- If your server folder has a Unix `start.sh`, it cannot be launched natively by Windows. The fallback is to run `PocketMine-MP.phar` with `php`.
-- Stop the PocketMine server yourself before running the updater. Automatic running-process detection currently works through Linux `/proc`, not Windows.
-- If you use the official Windows PocketMine package or a bundled PHP runtime, check that its startup method and PHP executable are available to this script; otherwise run the updater in the same environment that provides the server's PHP runtime.
+- A Unix `start.sh` cannot be launched natively by Windows. The fallback is to run `PocketMine-MP.phar` with `php`.
+- Stop the server yourself before running the updater. Automatic running-process detection currently works through Linux `/proc`, not Windows.
+- If you use a bundled PHP runtime, make sure its PHP executable is available to the script, or run the updater in the same environment as the server.
 
-### Termux (Android)
+</details>
 
-Install the tools in Termux:
+<details>
+<summary>Termux (Android)</summary>
+
+Install the tools:
 
 ```bash
 pkg update
@@ -161,15 +184,15 @@ git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
 cd PocketMine-AutoUpdater
 ```
 
-Run the updater with the path to your PocketMine server:
+Run the updater with your PocketMine server path:
 
 ```bash
 python pmmp_updater.py --dir /path/to/pocketmine
 ```
 
-**Termux note:** Installing the Python updater in Termux does not install PocketMine's PHP runtime. Axolotl-PM 5.x requires PHP 8.1 or newer and PocketMine-specific extensions; PHP 8.4 is currently the recommended PM5 build. Use a compatible PocketMine PHP binary for your environment. If your server runs inside Ubuntu using `proot-distro`, install Git and Python inside that Ubuntu environment and clone the project there. Run the updater from the same environment as the server, using the Ubuntu server directory path.
+**Important:** Installing the Python updater in Termux does not install PocketMine's PHP runtime. Axolotl-PM 5.x requires PHP 8.1 or newer and PocketMine-specific extensions; PHP 8.4 is currently the recommended PM5 build. Use a compatible PocketMine PHP binary for your environment.
 
-Example inside Ubuntu:
+If your server runs inside Ubuntu with `proot-distro`, install the updater inside that Ubuntu environment and run it there:
 
 ```bash
 apt update
@@ -179,11 +202,35 @@ cd PocketMine-AutoUpdater
 python3 pmmp_updater.py --dir /home/ubuntu/pocketmine
 ```
 
-### Other Linux distributions
+</details>
 
-Install Python 3, Git, and curl using your distribution's package manager, then use the Git clone commands above. The updater itself uses only Python's standard library; Git and curl are needed only for downloading the project with these examples.
+<details>
+<summary>macOS and other Linux distributions</summary>
+
+Install Python 3, Git, and curl using your system's package manager. Then clone the project:
+
+```bash
+git clone https://github.com/jn5ncjzj7j-byte/PocketMine-AutoUpdater.git
+cd PocketMine-AutoUpdater
+```
+
+Run it:
+
+```bash
+python3 pmmp_updater.py
+```
+
+Or specify your server directory:
+
+```bash
+python3 pmmp_updater.py --dir /path/to/pocketmine
+```
+
+Make sure a compatible PocketMine PHP runtime is available, either through your server's `start.sh` or as `php` in your PATH.
 
 </details>
+
+
 
 <details>
 <summary>Installation</summary>
